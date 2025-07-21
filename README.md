@@ -11,10 +11,12 @@ Example:
 
 ---
 
+
+---
+
 ## ✅ Deploy to Railway
 
-[![Deploy on Railway] [https://railway.app/new/project?template=https://github.com/vicxojsks/tradehills-telegram-bot](https://railway.app/new/project?template=https://github.com/vicxojsks/tradehills-telegram-bot
-)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/project?template=https://github.com/vicxojsks/tradehills-telegram-bot)
 
 1. Replace `YOUR_USERNAME` in the link above with your GitHub username
 2. Click the Deploy button
