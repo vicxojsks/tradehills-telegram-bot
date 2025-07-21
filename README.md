@@ -1,2 +1,6 @@
-# tradehills-telegram-bot
-Telegram bot for Trade Hills /calculate command
+# 📈 Trade Hills Telegram Bot
+
+A simple Telegram bot for calculating position size using /calculate.
+
+### 🧮 Usage:
+
