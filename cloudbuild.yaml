@@ -25,3 +25,7 @@ steps:
 
 images:
   - "us-central1-docker.pkg.dev/$PROJECT_ID/tradehills-bot-repo/tradehills-telegram-bot:$SHORT_SHA"
+
+options:
+  # Send logs to a regional user-owned bucket instead of requiring a global bucket
+  defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
