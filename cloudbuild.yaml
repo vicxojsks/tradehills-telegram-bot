@@ -23,5 +23,10 @@ steps:
         --allow-unauthenticated \
         --set-env-vars TOKEN=${_TOKEN},GROUP_ID=${_GROUP_ID}
 
+# Tell Cloud Build NOT to require a logs bucket
+options:
+  logging: "CLOUD_LOGGING_ONLY"
+
+# Make the newly built image available in Container Registry
 images:
   - "gcr.io/$PROJECT_ID/tradehills-telegram-bot:$SHORT_SHA"
