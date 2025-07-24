@@ -3,13 +3,13 @@ steps:
   args:
     - "build"
     - "-t"
-    - "gcr.io/$PROJECT_ID/tradehills-telegram-bot:$SHORT_SHA"
+    - "us-central1-docker.pkg.dev/$PROJECT_ID/tradehills-bot-repo/tradehills-telegram-bot:$SHORT_SHA"
     - "."
 
 - name: "gcr.io/cloud-builders/docker"
   args:
     - "push"
-    - "gcr.io/$PROJECT_ID/tradehills-telegram-bot:$SHORT_SHA"
+    - "us-central1-docker.pkg.dev/$PROJECT_ID/tradehills-bot-repo/tradehills-telegram-bot:$SHORT_SHA"
 
 - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
   entrypoint: "bash"
@@ -17,16 +17,11 @@ steps:
     - "-c"
     - |
       gcloud run deploy tradehills-telegram-bot \
-        --image gcr.io/$PROJECT_ID/tradehills-telegram-bot:$SHORT_SHA \
+        --image us-central1-docker.pkg.dev/$PROJECT_ID/tradehills-bot-repo/tradehills-telegram-bot:$SHORT_SHA \
         --region us-central1 \
         --platform managed \
         --allow-unauthenticated \
         --set-env-vars TOKEN=${_TOKEN},GROUP_ID=${_GROUP_ID}
 
-# Tell Cloud Build NOT to require a logs bucket
-options:
-  logging: "CLOUD_LOGGING_ONLY"
-
-# Make the newly built image available in Container Registry
 images:
-  - "gcr.io/$PROJECT_ID/tradehills-telegram-bot:$SHORT_SHA"
+  - "us-central1-docker.pkg.dev/$PROJECT_ID/tradehills-bot-repo/tradehills-telegram-bot:$SHORT_SHA"
