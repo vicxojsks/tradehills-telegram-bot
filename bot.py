@@ -23,7 +23,7 @@ async def calculate(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"• Risk %: {risk}%\n"
             f"• 💰 Margin Amount: AED {margin:,.2f}"
         )
-    except:
+    except Exception:
         text = "⚠️ Usage: /calculate <funds> <risk_percentage>\nExample: /calculate 43327.45 5"
     await update.message.reply_text(text)
 
@@ -39,11 +39,16 @@ def health():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    dispatcher.process_update(update)
+    try:
+        data = request.get_json(force=True)
+        logging.info(f"Received update data: {data}")
+        update = Update.de_json(data, bot)
+        dispatcher.process_update(update)
+    except Exception:
+        logging.exception("Error processing webhook update")
+    # Always return 200 and valid body so Cloud Run health sees a good response
     return "OK", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8080"))
-    # Bind to 0.0.0.0 so Cloud Run health check succeeds
     app.run(host="0.0.0.0", port=port)
