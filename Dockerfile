@@ -5,6 +5,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY bot.py .
+# Expose 8080 for health-check
+EXPOSE 8080
 
-# Use shell form so $PORT is expanded at runtime
-CMD exec gunicorn --bind 0.0.0.0:$PORT bot:app
+CMD ["python", "bot.py"]
