@@ -1,29 +1,17 @@
 import os
-import logging
-from flask import Flask, request
-from telegram import Bot, Update
-from telegram.ext import Dispatcher, CommandHandler, ContextTypes
+import asyncio
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram import Update
 
-# Basic Flask app for handling Telegram webhooks
-app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
-
-# Read env vars
-TOKEN    = os.getenv("TOKEN")
-GROUP_ID = int(os.getenv("GROUP_ID", "0"))
-bot      = Bot(token=TOKEN)
-
-# Set up dispatcher (no polling)
-dispatcher = Dispatcher(bot=bot, update_queue=None, workers=0)
-
-# Command handler
+# Handler for /calculate
 async def calculate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    GROUP_ID = int(os.getenv("GROUP_ID", "0"))
     if GROUP_ID and update.effective_chat.id != GROUP_ID:
-        return
-    args = context.args
+        return  # ignore requests outside your group
+
     try:
-        funds   = float(args[0])
-        risk_pct= float(args[1])
+        funds   = float(context.args[0])
+        risk_pct= float(context.args[1])
         margin  = round(funds * (risk_pct/100), 2)
         text    = (
             f"✅ Calculation Complete\n\n"
@@ -31,27 +19,29 @@ async def calculate(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"• Risk %: {risk_pct}%\n"
             f"• 💰 Margin Amount: AED {margin:,.2f}"
         )
-        await update.message.reply_text(text)
     except:
-        await update.message.reply_text(
-            "⚠️ Usage: /calculate <funds> <risk_percentage>\n"
-            "Example: /calculate 43327.45 5"
-        )
+        text = "⚠️ Usage: /calculate <funds> <risk_percentage>\nExample: /calculate 43327.45 5"
 
-dispatcher.add_handler(CommandHandler("calculate", calculate))
+    await update.message.reply_text(text)
 
-# Webhook endpoint
-@app.route("/webhook", methods=["POST"])
-def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    dispatcher.process_update(update)
-    return "OK", 200
+async def main():
+    TOKEN       = os.getenv("TOKEN")
+    WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g. https://<your-service>.run.app/webhook
+    PORT        = int(os.getenv("PORT", "8080"))
 
-# Health check on root
-@app.route("/", methods=["GET"])
-def health():
-    return "OK", 200
+    # Build the bot application
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("calculate", calculate))
+
+    # Start webhook server
+    await app.start_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path="webhook",
+        webhook_url=WEBHOOK_URL,
+    )
+    # Idle to keep it running
+    await app.idle()
 
 if __name__ == "__main__":
-    # For local testing only
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "8080")))
+    asyncio.run(main())
