@@ -21,6 +21,8 @@ steps:
         --region us-central1 \
         --platform managed \
         --allow-unauthenticated \
+        --min-instances 1 \
+        --clear-vpc-connector \
         --set-env-vars TOKEN=${_TOKEN},GROUP_ID=${_GROUP_ID}
 
 images:
