@@ -38,6 +38,7 @@ async def calculate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 def main():
+    print("🚀 Bot container starting up—health server + polling launching now")
     # Start health server
     threading.Thread(target=start_health_server, daemon=True).start()
 
